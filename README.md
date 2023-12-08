@@ -51,7 +51,7 @@ export const verifyApiKey: onRequestHookHandler = async (request) => {
 };
 ```
 
-Now pass the hook to the route handler. You can now access either a client authenticated with the service role via the Fastify instance, or a user-authenticated client via the request.
+Now pass the hook to the route handler. You can now access either a client authenticated with the service role via the Fastify instance, or a user-authenticated client via the request. Thanks to `@fastify/jwt`, you can also access the Supabase `User` object on the request.
 
 ```ts
 import { FastifyInstance } from "fastify";
@@ -62,14 +62,24 @@ export default async function routes(fastify: FastifyInstance) {
   fastify.get("/health", {
     onRequest: [verifyApiKey],
     handler: async (request, reply) => {
-      // authenticated as the user
+      // authenticated as the user that is making the request
       const { data } = request.supabaseClient.from("article").select("*");
 
       // authenticated with service role
       const { data } = fastify.supabaseClient.from("article").select("*");
+
+      // access the `User` object on the request
+      const tenantId = request.user.app_metadata.tenantId;
 
       return reply.send("OK");
     },
   });
 }
 ```
+
+Thats it!
+
+---
+
+Fastify Supabase is created by [psteinroe](https://github.com/psteinroe).
+Follow [@psteinroe](https://twitter.com/psteinroe) on Twitter for future project updates.
