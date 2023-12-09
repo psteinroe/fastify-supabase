@@ -1,5 +1,5 @@
 ---
-"@steinroe/fastify-supabase": patch
+"@psteinroe/fastify-supabase": patch
 ---
 
 initial release
