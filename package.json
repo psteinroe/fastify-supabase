@@ -1,5 +1,5 @@
 {
-  "name": "@steinroe/fastify-supabase",
+  "name": "@psteinroe/fastify-supabase",
   "version": "0.0.0",
   "author": "Philipp Steinrötter <philipp@steinroetter.com>",
   "type": "module",
