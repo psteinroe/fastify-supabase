@@ -13,21 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2.4.0
+      - id: setup-bun
+        name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          version: 8.x.x
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-          cache: pnpm
+          bun-version: latest
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build Packages
-        run: pnpm run build --filter='./packages/*'
+        run: bun run build
 
       - name: Create a release
         id: changesets
