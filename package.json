@@ -47,7 +47,8 @@
     "ci:release": "changeset publish"
   },
   "peerDependencies": {
-    "@supabase/supabase-js": "^2.0.0"
+    "@supabase/supabase-js": "^2.0.0",
+    "@fastify/jwt": "^7.0.0"
   },
   "dependencies": {
     "@fastify/error": "3.4.1",
@@ -56,8 +57,7 @@
   "devDependencies": {
     "bun-plugin-dts": "0.2.1",
     "@biomejs/biome": "1.4.1",
-    "@changesets/cli": "2.27.0",
-    "@fastify/jwt": "7.2.4",
+    "@changesets/cli": "2.27.1",
     "bun-types": "latest",
     "fast-jwt": "3.3.2",
     "fastify": "4.24.3",
