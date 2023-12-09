@@ -13,6 +13,12 @@ Install with your favorite package manager.
 pnpm add @psteinroe/fastify-supabase
 ```
 
+If your package manager does not install peer dependencies automatically, you need to install them too
+
+```bash
+pnpm add @fastify/jwt @supabase/supabase-js
+```
+
 ## Quick Start
 
 First, register `@fastify/jwt` with your Supabase JWT secret. You can obtain it from Supabase Studio.
