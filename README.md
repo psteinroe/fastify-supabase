@@ -28,7 +28,7 @@ fastify.register(fastifyJWT, {
 Then, register the Supabase plugin.
 
 ```ts
-import fastifySupabase from "@hellomateo/fastify-supabase";
+import fastifySupabase from "@psteinroe/fastify-supabase";
 
 fastify.register(fastifySupabase, {
   url: SUPABASE_URL,
