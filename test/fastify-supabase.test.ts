@@ -80,8 +80,7 @@ describe("fastify-supabase", () => {
     expect(fastify.supabaseClient).toBeTruthy();
   });
 
-  // fastify.inject is not yet supported in bun: https://github.com/oven-sh/bun/pull/7485
-  test.skip("service role", async () => {
+  test("service role", async () => {
     const tracker = mock(() => {
       // noop
     });
@@ -105,8 +104,7 @@ describe("fastify-supabase", () => {
     expect(tracker).toHaveBeenCalledTimes(1);
   });
 
-  // fastify.inject is not yet supported in bun: https://github.com/oven-sh/bun/pull/7485
-  test.skip("anon role", async () => {
+  test("anon role", async () => {
     const tracker = mock(() => {
       // noop
     });
@@ -131,8 +129,7 @@ describe("fastify-supabase", () => {
     expect(tracker).toHaveBeenCalledTimes(1);
   });
 
-  // fastify.inject is not yet supported in bun: https://github.com/oven-sh/bun/pull/7485
-  test.skip("user role", async () => {
+  test("user role", async () => {
     const tracker = mock(() => {
       // noop
     });
@@ -157,8 +154,7 @@ describe("fastify-supabase", () => {
     expect(tracker).toHaveBeenCalledTimes(1);
   });
 
-  // fastify.inject is not yet supported in bun: https://github.com/oven-sh/bun/pull/7485
-  test.skip("client cache", async () => {
+  test("client cache", async () => {
     const tracker = mock(() => {
       // noop
     });
