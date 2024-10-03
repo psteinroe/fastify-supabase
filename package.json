@@ -57,7 +57,7 @@
   "devDependencies": {
     "bun-plugin-dts": "0.2.1",
     "@biomejs/biome": "1.5.3",
-    "@changesets/cli": "2.27.1",
+    "@changesets/cli": "2.27.9",
     "bun-types": "latest",
     "fast-jwt": "4.0.0",
     "fastify": "4.26.1",
