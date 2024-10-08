@@ -1,3 +1,4 @@
-import { default as fastifySupabase } from "./fastify-supabase";
-
-export default fastifySupabase;
+export {
+	default as fastifySupabase,
+	type FastifySupabasePluginOpts,
+} from "./fastify-supabase";
