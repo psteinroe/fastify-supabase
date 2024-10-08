@@ -35,7 +35,7 @@ declare module "fastify" {
 
 export type FastifySupabasePluginOpts = {
 	url: string;
-	serviceKey: string;
+	serviceKey?: string;
 	anonKey: string;
 	options?: SupabaseClientOptions<"public">;
 };
@@ -44,7 +44,7 @@ const fastifySupabase = fp<FastifySupabasePluginOpts>(
 	async (fastify, opts, next) => {
 		const { url, serviceKey, anonKey, options } = opts;
 
-		const supabase = createClient(url, serviceKey, options);
+		const supabase = createClient(url, serviceKey ?? anonKey, options);
 
 		if (fastify.supabaseClient) {
 			return next(
@@ -63,13 +63,16 @@ const fastifySupabase = fp<FastifySupabasePluginOpts>(
 
 					if (req._supabaseClient) return req._supabaseClient;
 
+					const role = (req.user as { role?: string }).role;
+
 					if (
-						(req.user as { role?: string }).role === "service_role"
+						(serviceKey && role === "service_role") ||
+						(!serviceKey && role === "anon")
 					) {
 						req._supabaseClient = fastify.supabaseClient;
 					} else if (
-						(req.user as { role?: string }).role &&
-						(req.user as { role?: string }).role !== "anon"
+						role &&
+						((serviceKey && role !== "anon") || !serviceKey)
 					) {
 						const client = createClient(url, anonKey, {
 							...options,
