@@ -27,7 +27,7 @@ declare module "fastify" {
 		jwt: JWT;
 	}
 	export interface FastifyRequest {
-		_supabaseClient: SupabaseClient | null;
+		_supabaseClient: SupabaseClient;
 		supabaseClient: SupabaseClient;
 		supabaseUser: User;
 	}
@@ -54,7 +54,7 @@ const fastifySupabase = fp<FastifySupabasePluginOpts>(
 
 		fastify.decorate("supabaseClient", supabase);
 
-		fastify.decorateRequest("_supabaseClient", null);
+		fastify.decorateRequest("_supabaseClient");
 		fastify.decorateRequest(
 			"supabaseClient",
 			{
@@ -122,7 +122,7 @@ const fastifySupabase = fp<FastifySupabasePluginOpts>(
 		next();
 	},
 	{
-		fastify: ">=4.0.0",
+		fastify: "5.0.0",
 		name: "fastify-supabase",
 		dependencies: ["@fastify/jwt"],
 	}
