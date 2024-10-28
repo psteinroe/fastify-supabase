@@ -1,122 +1,131 @@
 import createError from "@fastify/error";
 import type { JWT } from "@fastify/jwt";
 import {
-  SupabaseClient,
-  SupabaseClientOptions,
-  User,
-  createClient,
+	SupabaseClient,
+	SupabaseClientOptions,
+	User,
+	createClient,
 } from "@supabase/supabase-js";
-import type { FastifyPluginCallback, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
 const AuthorizationTokenInvalidError = createError(
-  "FST_SB_AUTHORIZATION_TOKEN_INVALID",
-  "Authorization token is invalid",
-  401,
+	"FST_SB_AUTHORIZATION_TOKEN_INVALID",
+	"Authorization token is invalid",
+	401
 );
 
 const NoUserDataFoundError = createError(
-  "FST_SB_NO_USER_DATA_FOUND",
-  "No user data found in the request. Make sure to run request.jwtVerify() before trying to access the user.",
-  401,
+	"FST_SB_NO_USER_DATA_FOUND",
+	"No user data found in the request. Make sure to run request.jwtVerify() before trying to access the user.",
+	401
 );
 
 declare module "fastify" {
-  export interface FastifyInstance {
-    supabaseClient: SupabaseClient;
-    jwt: JWT;
-  }
-  export interface FastifyRequest {
-    _supabaseClient: SupabaseClient;
-    supabaseUser: User;
-  }
+	export interface FastifyInstance {
+		supabaseClient: SupabaseClient;
+		jwt: JWT;
+	}
+	export interface FastifyRequest {
+		_supabaseClient: SupabaseClient;
+		supabaseClient: SupabaseClient;
+		supabaseUser: User;
+	}
 }
 
 export type FastifySupabasePluginOpts = {
-  url: string;
-  serviceKey: string;
-  anonKey: string;
-  options?: SupabaseClientOptions<"public">;
+	url: string;
+	serviceKey?: string;
+	anonKey: string;
+	options?: SupabaseClientOptions<"public">;
 };
 
-const fastifySupabase: FastifyPluginCallback<FastifySupabasePluginOpts> = (
-  fastify,
-  opts,
-  next,
-) => {
-  const { url, serviceKey, anonKey, options } = opts;
+const fastifySupabase = fp<FastifySupabasePluginOpts>(
+	async (fastify, opts, next) => {
+		const { url, serviceKey, anonKey, options } = opts;
 
-  const supabase = createClient(url, serviceKey, options);
+		const supabase = createClient(url, serviceKey ?? anonKey, options);
 
-  if (fastify.supabaseClient) {
-    return next(new Error("fastify-supabase has already been registered"));
-  }
+		if (fastify.supabaseClient) {
+			return next(
+				new Error("fastify-supabase has already been registered")
+			);
+		}
 
-  fastify.decorate("supabaseClient", supabase);
+		fastify.decorate("supabaseClient", supabase);
 
-  fastify.decorateRequest("_supabaseClient", null);
-  fastify.decorateRequest(
-    "supabaseClient",
-    {
-      getter() {
-        const req = this as unknown as FastifyRequest;
+		fastify.decorateRequest("_supabaseClient");
+		fastify.decorateRequest(
+			"supabaseClient",
+			{
+				getter() {
+					const req = this as unknown as FastifyRequest;
 
-        if (req._supabaseClient) return req._supabaseClient;
+					if (req._supabaseClient) return req._supabaseClient;
 
-        if ((req.user as { role?: string }).role === "service_role") {
-          req._supabaseClient = fastify.supabaseClient;
-        } else if (
-          (req.user as { role?: string }).role &&
-          (req.user as { role?: string }).role !== "anon"
-        ) {
-          const client = createClient(url, anonKey, {
-            ...options,
-            auth: {
-              ...options?.auth,
-              persistSession: false,
-            },
-            global: {
-              ...options?.global,
-              headers: {
-                ...options?.global?.headers,
-                Authorization: `Bearer ${fastify.jwt.lookupToken(req)}`,
-              },
-            },
-          });
-          req._supabaseClient = client as SupabaseClient;
-        }
+					const role = (req.user as { role?: string }).role;
 
-        if (!req._supabaseClient) {
-          throw new AuthorizationTokenInvalidError();
-        }
+					if (
+						(serviceKey && role === "service_role") ||
+						(!serviceKey && role === "anon")
+					) {
+						req._supabaseClient = fastify.supabaseClient;
+					} else if (
+						role &&
+						((serviceKey && role !== "anon") || !serviceKey)
+					) {
+						const client = createClient(url, anonKey, {
+							...options,
+							auth: {
+								...options?.auth,
+								persistSession: false,
+							},
+							global: {
+								...options?.global,
+								headers: {
+									...options?.global?.headers,
+									Authorization: `Bearer ${fastify.jwt.lookupToken(
+										req
+									)}`,
+								},
+							},
+						});
+						req._supabaseClient = client as SupabaseClient;
+					}
 
-        return req._supabaseClient;
-      },
-    },
-    ["user"],
-  );
+					if (!req._supabaseClient) {
+						throw new AuthorizationTokenInvalidError();
+					}
 
-  fastify.decorateRequest(
-    "supabaseUser",
-    {
-      getter() {
-        const req = this as unknown as FastifyRequest;
+					return req._supabaseClient;
+				},
+			},
+			["user"]
+		);
 
-        if (!req.user) {
-          throw new NoUserDataFoundError();
-        }
+		fastify.decorateRequest(
+			"supabaseUser",
+			{
+				getter() {
+					const req = this as unknown as FastifyRequest;
 
-        return req.user as User;
-      },
-    },
-    ["user"],
-  );
+					if (!req.user) {
+						throw new NoUserDataFoundError();
+					}
 
-  next();
-};
+					return req.user as User;
+				},
+			},
+			["user"]
+		);
 
-export default fp(fastifySupabase, {
-  fastify: "4.x",
-  name: "fastify-supabase",
-  dependencies: ["@fastify/jwt"],
-});
+		next();
+	},
+	{
+		fastify: "5.x",
+		name: "fastify-supabase",
+		dependencies: ["@fastify/jwt"],
+	}
+);
+
+export default fastifySupabase;
