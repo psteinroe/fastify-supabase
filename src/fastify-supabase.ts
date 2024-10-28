@@ -122,7 +122,7 @@ const fastifySupabase = fp<FastifySupabasePluginOpts>(
 		next();
 	},
 	{
-		fastify: "5.0.0",
+		fastify: "5.x",
 		name: "fastify-supabase",
 		dependencies: ["@fastify/jwt"],
 	}
