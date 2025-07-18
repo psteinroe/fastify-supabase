@@ -62,6 +62,6 @@
     "fast-jwt": "5.0.6",
     "fastify": "5.3.2",
     "tsup": "8.0.2",
-    "typescript": "5.3.3"
+    "typescript": "5.8.3"
   }
 }
