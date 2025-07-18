@@ -54,7 +54,7 @@ const fastifySupabase: FastifyPluginCallback<FastifySupabasePluginOpts> = (
 
   fastify.decorate("supabaseClient", supabase);
 
-  fastify.decorateRequest("_supabaseClient", null);
+  fastify.decorateRequest("_supabaseClient");
   fastify.decorateRequest(
     "supabaseClient",
     {
@@ -116,7 +116,7 @@ const fastifySupabase: FastifyPluginCallback<FastifySupabasePluginOpts> = (
 };
 
 export default fp(fastifySupabase, {
-  fastify: "4.x",
+  fastify: "5.x",
   name: "fastify-supabase",
   dependencies: ["@fastify/jwt"],
 });
