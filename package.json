@@ -48,7 +48,7 @@
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.0.0",
-    "@fastify/jwt": "^9.0.0"
+    "@fastify/jwt": "^9.0.0 || ^10.0.0"
   },
   "dependencies": {
     "@fastify/error": "4.2.0",
