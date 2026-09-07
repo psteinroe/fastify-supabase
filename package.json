@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@fastify/error": "4.2.0",
-    "fastify-plugin": "5.0.1"
+    "fastify-plugin": "5.1.0"
   },
   "devDependencies": {
     "bun-plugin-dts": "0.2.1",
